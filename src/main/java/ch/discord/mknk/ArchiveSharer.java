@@ -61,7 +61,7 @@ public class ArchiveSharer {
 //		ffmpegProcessBuilder.command().forEach(System.out::println);
 
 		Process ffmpegProcess = ffmpegProcessBuilder.directory(new File("G:\\youtube-dl")).start();
-		ffmpegProcess.waitFor(); 
+		ffmpegProcess.waitFor();
 
 		System.out.println("Salt added to metadata");
 
