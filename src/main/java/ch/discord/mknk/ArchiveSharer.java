@@ -36,11 +36,15 @@ public class ArchiveSharer {
 		Option userName = Option.builder("u").required().hasArg().longOpt("user-name").build();
 		Option userId = Option.builder("id").required().hasArg().longOpt("user-id").build();
 		Option file = Option.builder("f").required().hasArg().longOpt("file").build();
+		Option ffmpeg = Option.builder("ffm").required().hasArg().longOpt("ffmpeg").build();
+		Option staging = Option.builder("stg").required().hasArg().longOpt("staging").build();
 
 		Options options = new Options();
 		options.addOption(userName);
 		options.addOption(userId);
 		options.addOption(file);
+		options.addOption(ffmpeg);
+		options.addOption(staging);
 
 		CommandLineParser cliParser = new DefaultParser();
 		CommandLine cli = cliParser.parse(options, args);
@@ -52,15 +56,17 @@ public class ArchiveSharer {
 
 		String salt = UUID.randomUUID().toString();
 
-		Path outPath = Files.createDirectories(Paths.get("G:\\youtube-dl", "staging", salt));
+		Path outPath = Files.createDirectories(Paths.get(cli.getOptionValue("stg"), salt));
 		outPath = outPath.resolve(inputFile.getName());
 		
-		ProcessBuilder ffmpegProcessBuilder = new ProcessBuilder().command("G:\\youtube-dl\\ffmpeg.exe", "-i", "\"" + inputFile.getAbsolutePath() + "\"", "-c", "copy", "-movflags",
+		Path ffmpegPath = Paths.get(cli.getOptionValue("ffm"));
+		
+		ProcessBuilder ffmpegProcessBuilder = new ProcessBuilder().command(ffmpegPath.toAbsolutePath().toString(), "-i", "\"" + inputFile.getAbsolutePath() + "\"", "-c", "copy", "-movflags",
 				"use_metadata_tags", "-map_metadata", "0", "-metadata", "comment=" + salt, "-loglevel", "quiet", "\"" + outPath.toAbsolutePath().toString() + "\"");
 
 //		ffmpegProcessBuilder.command().forEach(System.out::println);
 
-		Process ffmpegProcess = ffmpegProcessBuilder.directory(new File("G:\\youtube-dl")).start();
+		Process ffmpegProcess = ffmpegProcessBuilder.directory(ffmpegPath.getParent().toFile()).start();
 		ffmpegProcess.waitFor(); 
 
 		System.out.println("Salt added to metadata");
