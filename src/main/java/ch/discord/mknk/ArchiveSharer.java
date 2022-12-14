@@ -48,12 +48,11 @@ public class ArchiveSharer {
 
 		CommandLineParser cliParser = new DefaultParser();
 		CommandLine cli = cliParser.parse(options, args);
-
-		System.out.println("Adding salt to Metadata ...");
-		File inputFile = new File(cli.getOptionValue("f"));
 		
+		File inputFile = new File(cli.getOptionValue("f"));
 		System.out.println("Input file is: "+inputFile.getAbsolutePath());
 
+		System.out.println("Adding salt to Metadata...");
 		String salt = UUID.randomUUID().toString();
 
 		Path outPath = Files.createDirectories(Paths.get(cli.getOptionValue("stg"), salt));
